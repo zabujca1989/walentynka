@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>hej mam pytanko ❤️</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>My love 💕<br>Will you be my Valentine? 💖</h1>
+
+<div class="buttons">
+    <button id="tak">YES 💘</button>
+    <button id="nie">NO 🙈</button>
+</div>
+
+<script>
+const takBtn = document.getElementById("tak");
+const nieBtn = document.getElementById("nie");
+
+let mouseX=0, mouseY=0;
+let licznikNie = 0;
+let ucieka = false;
+
+// Pełna baza GIFów
+let gify = [
+"https://media0.giphy.com/media/H6cmWzp6LGFvqjidB7/giphy.gif",
+"https://media1.giphy.com/media/98MaHVwJOmWMz4cz1K/giphy.gif",
+"https://media1.giphy.com/media/sLkIthus9lEwoe7PRx/giphy.gif",
+"https://media.giphy.com/media/NTY1kHmcLsCsg/giphy.gif",
+"https://media.giphy.com/media/OFglWxEgGKGo3ycsNF/giphy.gif",
+"https://media.giphy.com/media/TpsuCxwsNH8gatbpR5/giphy.gif",
+"https://media.giphy.com/media/4kWeXCB5jqCPJsmDWw/giphy.gif",
+"https://media.giphy.com/media/wKJSRY2OgYx2m6R4oA/giphy.gif",
+"https://media.giphy.com/media/FjLefDFgUFvlWfTibA/giphy.gif",
+"https://media.giphy.com/media/JiN5WlLgVpzR0807By/giphy.gif",
+"https://media.giphy.com/media/qIAp4L0FSDBGCsXsFj/giphy.gif",
+"https://media.giphy.com/media/dt7FtL4RHIQs0XEoL0/giphy.gif",
+"https://media.giphy.com/media/FnIOl9UZmHF8C3NTtc/giphy.gif",
+"https://media.giphy.com/media/ykaNntbZ3hfsWotKmA/giphy.gif",
+"https://media.giphy.com/media/ZU6EzYxSf8wYfrDFn8/giphy.gif"
+];
+
+// Pełna baza tekstów
+let napisy = [
+"ten przycisk nie działa","no chyba nie","zakaz","no more dick","ocipiałaś?",
+"nuh uh","no chyba se jaja robisz","czemu to kliknełaś?","aha?",
+"ty sie dobrze czujesz?","nie skibidi","nie kosiasz mnie?","ok","nara","nie mi ło"
+];
+
+let popupPositions = [];
+let movingPopups = [];
+
+// Ruch myszy
+document.addEventListener("mousemove", e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+// Kliknięcie przycisku NIE
+nieBtn.addEventListener("click", ()=>{
+    if(ucieka){
+        nieBtn.remove();
+        pokazSpecjalnyPopup();
+        return;
+    }
+
+    for(let i=0;i<5;i++) pokazPopup(i===0);
+    licznikNie++;
+    if(licznikNie>=3 && !ucieka){
+        const rect = nieBtn.getBoundingClientRect();
+        nieBtn.style.position = "absolute";
+        nieBtn.style.left = rect.left + "px";
+        nieBtn.style.top = rect.top + "px";
+        nieBtn.style.zIndex = "20";
+        ucieka = true;
+    }
+});
+
+// Kliknięcie TAK
+takBtn.onclick = ()=>{
+    document.body.innerHTML=`
+    <div id="yes-section">
+        <h1 class="main-title">My love 🥰💖</h1>
+        <h2 class="subtitle">now you are officially my Valentine 💕</h2>
+        <p class="small-text">I love you very much and I am very happy that I have you 🤍</p>
+    </div>`;
+    startFallingStarsAndHearts();   // tylko spadające gwiazdki i serca w losowych trajektoriach
+}
+
+// Specjalny popup po kliknięciu uciekającego NIE (mały)
+function pokazSpecjalnyPopup(){
+    const width = 200; 
+    const height = 80; 
+    const top = (window.innerHeight - height)/2;
+    const left = (window.innerWidth - width)/2;
+
+    const popup = document.createElement("div");
+    popup.className = "popup mini-popup";
+    popup.style.width = width+"px";
+    popup.style.height = height+"px";
+    popup.style.top = top+"px";
+    popup.style.left = left+"px";
+    popup.innerHTML = `<div class="popup-close">❌</div>
+                       <div class="popup-text">no chyba nie elo 😡</div>`;
+    document.body.appendChild(popup);
+
+    const closeBtn = popup.querySelector(".popup-close");
+    closeBtn.onclick = ()=> popup.remove();
+}
+
+// Funkcja popupów przy NIE (5 popupów razem zasłaniają ekran)
+function pokazPopup(skacze=false){
+    if(gify.length===0 || napisy.length===0) return;
+    const gIndex = Math.floor(Math.random()*gify.length);
+    const tIndex = Math.floor(Math.random()*napisy.length);
+    const gif = gify.splice(gIndex,1)[0];
+    const tekst = napisy.splice(tIndex,1)[0];
+
+    const aspectRatio = 4/3;
+    const width = window.innerWidth * (0.25 + Math.random()*0.1);
+    const height = width / aspectRatio;
+
+    let top,left, attempts=0;
+    do {
+        top = Math.random()*(window.innerHeight-height-70);
+        left = Math.random()*(window.innerWidth-width);
+        attempts++;
+    } while(isOverlapping(left,top,width,height) && attempts<100);
+    popupPositions.push({x:left,y:top,w:width,h:height});
+
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.style.width = width+"px";
+    popup.style.height = (height+70)+"px";
+    popup.style.top = top+"px";
+    popup.style.left = left+"px";
+    popup.dataset.jump = skacze;
+    popup.dataset.moved = "false";
+    document.body.appendChild(popup);
+
+    popup.innerHTML = `<div class="popup-close">❌</div>
+        <div class="popup-text">${tekst} 😢</div>
+        <img src="${gif}" style="width:100%; height: calc(100% - 70px); object-fit:contain;">`;
+
+    const closeBtn = popup.querySelector(".popup-close");
+    closeBtn.onclick = e=>{
+        e.stopPropagation();
+        if(popup.dataset.jump==="true" && popup.dataset.moved==="false"){
+            popup.style.top = Math.random()*(window.innerHeight-height-70)+"px";
+            popup.style.left = Math.random()*(window.innerWidth-width)+"px";
+            popup.dataset.moved="true";
+        } else {
+            popup.remove();
+        }
+    }
+
+    if(Math.random() < 0.5) movingPopups.push({el: popup, dx: (Math.random()*1-0.5), dy: (Math.random()*0.5-0.25)});
+}
+
+function isOverlapping(x,y,w,h){
+    for(let p of popupPositions){
+        if(!(x+w < p.x || x > p.x+p.w || y+h < p.y || y > p.y+p.h)) return true;
+    }
+    return false;
+}
+
+// Animacja przycisku NIE po 3 kliknięciach
+function animateNie() {
+    if(ucieka){
+        const rect = nieBtn.getBoundingClientRect();
+        const dx = rect.left + rect.width/2 - mouseX;
+        const dy = rect.top + rect.height/2 - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 220 && dist !== 0){
+            const speed = 6;
+            let newX = rect.left + (dx/dist)*speed;
+            let newY = rect.top + (dy/dist)*speed;
+
+            newX = Math.max(0, Math.min(window.innerWidth - rect.width, newX));
+            newY = Math.max(0, Math.min(window.innerHeight - rect.height, newY));
+
+            nieBtn.style.left = newX + "px";
+            nieBtn.style.top = newY + "px";
+        }
+    }
+    requestAnimationFrame(animateNie);
+}
+animateNie();
+
+// Animacja poruszających się popupów
+function animatePopups(){
+    for(let p of movingPopups){
+        let top = parseFloat(p.el.style.top);
+        let left = parseFloat(p.el.style.left);
+        top += p.dy;
+        left += p.dx;
+        if(top < 0 || top + p.el.offsetHeight > window.innerHeight) p.dy *= -1;
+        if(left < 0 || left + p.el.offsetWidth > window.innerWidth) p.dx *= -1;
+        p.el.style.top = top + "px";
+        p.el.style.left = left + "px";
+    }
+    requestAnimationFrame(animatePopups);
+}
+animatePopups();
+
+// Serduszka płynnie w górę na stronie głównej
+function spawnHeart(){
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = Math.random()>0.5?"💗":"💞";
+    heart.style.left = Math.random()*window.innerWidth+"px";
+    heart.style.top = Math.random()*window.innerHeight+"px";
+    document.body.appendChild(heart);
+
+    function moveHeart(){
+        let y = parseFloat(heart.style.top);
+        y -= 0.3 + Math.random()*0.3;
+        if(y < -50) y = window.innerHeight;
+        heart.style.top = y+"px";
+        requestAnimationFrame(moveHeart);
+    }
+    moveHeart();
+}
+for(let i=0;i<30;i++) spawnHeart();
+
+// Spadające gwiazdy i serca po YES
+function startFallingStarsAndHearts(){
+    const elements = ["💖","🌟","✨","💫"];
+    for(let i=0;i<50;i++){
+        const item = document.createElement("div");
+        item.className = "heart";
+        item.innerHTML = Math.random()>0.5 ? elements[Math.floor(Math.random()*elements.length)] : "💗";
+        item.style.left = Math.random()*window.innerWidth + "px";
+        item.style.top = "-50px";
+        item.style.fontSize = (15 + Math.random()*25) + "px";
+        item.style.opacity = 0.5 + Math.random()*0.5;
+        document.body.appendChild(item);
+
+        const amplitude = 30 + Math.random()*50;
+        const frequency = 0.01 + Math.random()*0.03;
+        const speed = 0.5 + Math.random()*1;
+        const initialLeft = parseFloat(item.style.left);
+        const phase = Math.random()*Math.PI*2;
+
+        function moveItem(){
+            let y = parseFloat(item.style.top);
+            y += speed;
+            if(y > window.innerHeight) y = -50;
+            const x = initialLeft + Math.sin(y*frequency + phase) * amplitude;
+            item.style.top = y+"px";
+            item.style.left = x+"px";
+            requestAnimationFrame(moveItem);
+        }
+        moveItem();
+    }
+}
+
+</script>
+</body>
+</html>

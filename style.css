@@ -1,0 +1,119 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #FFC0CB;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+}
+
+h1 {
+    font-size: 50px;
+    margin-bottom: 40px;
+    color: #b30059;
+    z-index: 10;
+    position: relative;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    z-index: 10;
+}
+
+button {
+    font-size: 28px;
+    padding: 25px 50px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: white;
+    color: black;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.25);
+    transition: transform 0.2s;
+}
+
+button:hover { transform: scale(1.05); }
+
+.popup {
+  position: fixed;
+  background: #FFD6E0;
+  border: 2px solid #ff99b3;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.popup-close {
+    text-align: right;
+    font-weight: bold;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.popup-text {
+    text-align:center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom:10px;
+    color:#b30059;
+}
+
+.popup img {
+    display:block;
+    margin:0 auto;
+    border-radius:15px;
+    width: 100%;
+    height: calc(100% - 70px);
+    object-fit: contain;
+}
+
+.mini-popup {
+    font-size: 22px;
+    background: #FFD6E0;
+    border: 2px solid #ff99b3;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.mini-popup .popup-text {
+    font-size: 20px;
+    margin: 15px 10px;
+    color: #b30059;
+}
+
+.heart {
+    position: fixed;
+    font-size: 24px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Dodatkowe style sekcji YES */
+#yes-section .main-title {
+    font-size: 60px;
+    color: #b30059;
+    margin-bottom: 20px;
+}
+
+#yes-section .subtitle {
+    font-size: 40px;
+    color: #ff3366;
+    margin-bottom: 20px;
+}
+
+#yes-section .small-text {
+    font-size: 30px;
+    color: #000000;
+}
